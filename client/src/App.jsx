@@ -6,6 +6,7 @@ import Signin from './pages/Signin';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Header from './components/Header';
+import FooterComponent from './components/Footer';
 const App = () => {
   return (
     <BrowserRouter>
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
+      <FooterComponent />
     </BrowserRouter>
   );
 };
