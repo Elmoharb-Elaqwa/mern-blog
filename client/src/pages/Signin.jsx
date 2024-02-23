@@ -2,28 +2,32 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import axios from 'axios';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  singInStart,
+  signInSuccessfull,
+  signInFailur,
+} from '../redux/user/userSlice';
 const Signin = () => {
+  const user = useSelector((state) => state.user);
+  console.log(user);
   const [form, setForm] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value.trim() });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch(singInStart());
     await axios
       .post('/api/auth/signin', form)
-      .then(() => {
-        setErrorMessage(null);
-        setLoading(true);
-        setTimeout(() => {
-          navigate('/');
-        }, 500);
+      .then((res) => {
+        dispatch(signInSuccessfull(res.data));
+        navigate('/');
       })
       .catch((err) => {
-        setErrorMessage(err.response.data.message);
-        setLoading(false);
+        dispatch(signInFailur(err.response.data.message));
       });
   };
   return (
@@ -69,9 +73,9 @@ const Signin = () => {
             <Button
               gradientDuoTone="purpleToPink"
               type="submit"
-              disabled={loading}
+              disabled={user.loading}
             >
-              {loading ? (
+              {user.loading ? (
                 <>
                   <Spinner></Spinner>
                   <span className="pl-3">Loading...</span>
@@ -87,9 +91,9 @@ const Signin = () => {
               Sign Up
             </Link>
           </div>
-          {errorMessage && (
+          {user.error && (
             <Alert className="mt-5" color="failure">
-              {errorMessage}
+              {user.error}
             </Alert>
           )}
         </div>
